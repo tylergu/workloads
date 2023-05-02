@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: receiver
+spec:
+  containers:
+    - name: receiver
+      image: docker.io/tylergu1998/rabbitmq-receiver:v1
+      imagePullPolicy: Always
+      env:
+        - name: SECRET_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: hello-world-default-user
+              key: username
+        - name: SECRET_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: hello-world-default-user
+              key: password
+        - name: SECRET_HOST
+          valueFrom:
+            secretKeyRef:
+              name: hello-world-default-user
+              key: host

@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"log"
+	"os"
 
 	amqp "github.com/rabbitmq/amqp091-go"
 )
@@ -13,7 +15,11 @@ func failOnError(err error, msg string) {
 }
 
 func main() {
-	conn, err := amqp.Dial("amqp://default_user_pMFO3zXaUtQxqQm1Zwp:c1ySLEbEIWmAmnlN2JV5m5W4QytwSvJt@hello-world.default.svc:5672/")
+	username := os.Getenv("SECRET_USERNAME")
+	password := os.Getenv("SECRET_PASSWORD")
+	host := os.Getenv("SECRET_HOST")
+	url := fmt.Sprintf("amqp://%s:%s@%s:5672/", username, password, host)
+	conn, err := amqp.Dial(url)
 	failOnError(err, "Failed to connect to RabbitMQ")
 	defer conn.Close()
 
