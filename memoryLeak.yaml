@@ -1,0 +1,15 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: memory-stress
+  namespace: chaos-mesh
+spec:
+  mode: one
+  selector:
+    labelSelectors:
+      'app.kubernetes.io/component': 'rabbitmq'
+  stressors:
+    memory:
+      workers: 4
+      size: '50%'
+      time: '10s'
