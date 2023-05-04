@@ -10,7 +10,7 @@ spec:
       args:
       - /opt/kafka/bin/kafka-consumer-perf-test.sh
       - --bootstrap-server 
-      - my-cluster-kafka-bootstrap:9092
+      - my-cluster-kafka-bootstrap.kafka.svc:9092
       - --topic 
       - hello-world
       - --messages
