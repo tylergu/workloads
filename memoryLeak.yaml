@@ -4,7 +4,7 @@ metadata:
   name: memory-stress
   namespace: chaos-mesh
 spec:
-  mode: one
+  mode: all
   selector:
     labelSelectors:
       'app.kubernetes.io/component': 'rabbitmq'
