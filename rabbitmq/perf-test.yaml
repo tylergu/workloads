@@ -24,4 +24,4 @@ spec:
               name: hello-world-default-user
               key: host
         - name: URI
-          value: amqp://$(SECRET_USERNAME):$(SECRET_PASSWORD)@$(SECRET_HOST):5672/
+          value: amqp://$(SECRET_USERNAME):$(SECRET_PASSWORD)@$(SECRET_HOST):5672
