@@ -13,3 +13,5 @@ spec:
       - my-cluster-kafka-bootstrap:9092
       - --topic 
       - hello-world
+      - --messages
+      - 1000000
