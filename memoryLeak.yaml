@@ -8,8 +8,9 @@ spec:
   selector:
     labelSelectors:
       'app.kubernetes.io/component': 'rabbitmq'
+    namespaces:
+      - default
   stressors:
     memory:
       workers: 4
       size: '50%'
-      time: '10s'
