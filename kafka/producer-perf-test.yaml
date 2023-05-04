@@ -16,7 +16,7 @@ spec:
       - --throughput
       - "-1"
       - --record-size
-      - "100"
+      - "1000"
       - --num-records
-      - "1000000"
+      - "10000000"
       - --print-metrics
