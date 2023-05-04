@@ -7,7 +7,7 @@ spec:
   mode: all
   selector:
     nodes:
-      - k3d-test-agent-2
+      - minikube-m03
   direction: both
   target:
     mode: all
