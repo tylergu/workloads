@@ -9,7 +9,7 @@ spec:
       imagePullPolicy: Always
       args:
       - /opt/kafka/bin/kafka-consumer-perf-test.sh
-      - --consumer-props bootstrap.server my-cluster-kafka-bootstrap:9092
-      - --topic hello-world
-      - --num-records "1000000"
-      - --record-size "100"
+      - --bootstrap-server 
+      - my-cluster-kafka-bootstrap:9092
+      - --topic 
+      - hello-world
