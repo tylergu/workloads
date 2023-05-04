@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: kafka-perf-test
+  name: kafka-consumer-perf-test
 spec:
   containers:
-    - name: kafka-perf-test
+    - name: kafka-consumer-perf-test
       image: quay.io/strimzi/kafka:0.34.0-kafka-3.4.0
       imagePullPolicy: Always
       args:
@@ -15,3 +15,5 @@ spec:
       - hello-world
       - --messages
       - "1000000"
+      - --timeout
+      - "60000"

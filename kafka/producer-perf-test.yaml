@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: kafka-producer-perf-test
+spec:
+  containers:
+    - name: kafka-producer-perf-test
+      image: quay.io/strimzi/kafka:0.34.0-kafka-3.4.0
+      imagePullPolicy: Always
+      args:
+      - /opt/kafka/bin/kafka-producer-perf-test.sh
+      - --bootstrap-server 
+      - my-cluster-kafka-bootstrap.kafka.svc:9092
+      - --topic 
+      - hello-world
+      - --messages
+      - "1000000"
+      - --timeout
+      - "60000"
