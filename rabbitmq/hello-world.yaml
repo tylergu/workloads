@@ -1,0 +1,19 @@
+apiVersion: rabbitmq.com/v1beta1
+kind: RabbitmqCluster
+metadata:
+  name: hello-world
+spec:
+  replicas: 3
+  override:
+    statefulSet:
+      spec:
+        template:
+          spec:
+            containers:
+            - name: rabbitmq
+              livenessProbe:
+                tcpSocket:
+                  port: amqp
+                initialDelaySeconds: 60
+                periodSeconds: 10
+                timeoutSeconds: 5
