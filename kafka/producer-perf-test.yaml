@@ -9,8 +9,8 @@ spec:
       imagePullPolicy: Always
       args:
       - /opt/kafka/bin/kafka-producer-perf-test.sh
-      - --bootstrap-server 
-      - my-cluster-kafka-bootstrap.kafka.svc:9092
+      - --producer-props
+      - bootstrap.server=my-cluster-kafka-bootstrap.kafka.svc:9092
       - --topic 
       - hello-world
       - --messages
