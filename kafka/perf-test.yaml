@@ -14,4 +14,4 @@ spec:
       - --topic 
       - hello-world
       - --messages
-      - 1000000
+      - "1000000"
