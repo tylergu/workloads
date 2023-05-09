@@ -7,6 +7,12 @@ spec:
     - name: perf-test
       image: pivotalrabbitmq/perf-test:latest
       imagePullPolicy: Always
+      args:
+      - --queue-pattern 'perf-test-%d'
+      - --queue-pattern-from 1
+      - --queue-pattern-to 100
+      - --producers 100
+      - --consumers 100
       env:
         - name: SECRET_USERNAME
           valueFrom:

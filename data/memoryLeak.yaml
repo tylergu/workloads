@@ -13,4 +13,4 @@ spec:
   stressors:
     memory:
       workers: 4
-      size: '50%'
+      size: '25%'
