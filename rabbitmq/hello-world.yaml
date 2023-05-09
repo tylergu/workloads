@@ -3,6 +3,18 @@ kind: RabbitmqCluster
 metadata:
   name: hello-world
 spec:
+  affinity:
+    podAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution: null
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchExpressions:
+          - key: app.kubernetes.io/name
+            operator: In
+            values:
+            - minikube
+        topologyKey: kubernetes.io/hostname
   replicas: 3
   override:
     statefulSet:
