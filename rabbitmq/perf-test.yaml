@@ -8,6 +8,9 @@ spec:
       image: pivotalrabbitmq/perf-test:latest
       imagePullPolicy: Always
       args:
+      - java
+      - -jar
+      - /perf_test/perf-test.jar
       - --queue-pattern 'perf-test-%d'
       - --queue-pattern-from 1
       - --queue-pattern-to 100
