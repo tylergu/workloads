@@ -1,7 +1,7 @@
 apiVersion: rabbitmq.com/v1beta1
 kind: RabbitmqCluster
 metadata:
-  name: hello-world
+  name: test-cluster
 spec:
   affinity:
     podAffinity:
@@ -13,7 +13,7 @@ spec:
           - key: app.kubernetes.io/name
             operator: In
             values:
-            - minikube
+            - rabbitmq
         topologyKey: kubernetes.io/hostname
   replicas: 3
   override:
