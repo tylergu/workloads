@@ -10,7 +10,7 @@ spec:
       args:
       - /opt/kafka/bin/kafka-producer-perf-test.sh
       - --producer-props
-      - bootstrap.servers=my-cluster-kafka-bootstrap.kafka.svc:9092
+      - bootstrap.servers=test-cluster-kafka-bootstrap.kafka.svc:9092
       - --topic 
       - hello-world
       - --throughput
