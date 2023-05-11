@@ -18,5 +18,5 @@ spec:
       - --record-size
       - "1000"
       - --num-records
-      - "10000000"
+      - "1000000"
       - --print-metrics
