@@ -66,6 +66,8 @@ func computeRate(window PriorityQueue) float32 {
 	for i := 0; i < len(window); i++ {
 		if window[i].err == nil {
 			success++
+		} else {
+			fmt.Printf("Error: %s\n", window[i].err)
 		}
 		total++
 	}
