@@ -105,5 +105,6 @@ func main() {
 	for range ticker.C {
 		execAsync(db, output, time.Now(), CreatePlayerSQL,
 			fmt.Sprintf("player-%d", sequence), 0, 0)
+		sequence++
 	}
 }
