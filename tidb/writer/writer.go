@@ -19,6 +19,8 @@ const (
 	GetPlayerByLimitSQL  = "SELECT id, coins, goods FROM player LIMIT ?"
 	DropTableSQL         = "DROP TABLE IF EXISTS player"
 	CreateTableSQL       = "CREATE TABLE player ( `id` VARCHAR(36), `coins` INTEGER, `goods` INTEGER, PRIMARY KEY (`id`) );"
+	TicksPerSecond       = 10
+	WindowSize           = 100
 )
 
 func recreateTable(db *sql.DB) {
@@ -53,6 +55,7 @@ func getEnvWithDefault(key, fallback string) string {
 func execAsync(db *sql.DB, result_chan chan Result, ts time.Time, sql string, args ...any) {
 	go func() {
 		_, err := db.Exec(sql, args...)
+		fmt.Printf("Error: %s\n", err)
 		result_chan <- Result{
 			err: err,
 			ts:  ts,
@@ -66,8 +69,6 @@ func computeRate(window PriorityQueue) float32 {
 	for i := 0; i < len(window); i++ {
 		if window[i].err == nil {
 			success++
-		} else {
-			fmt.Printf("Error: %s\n", window[i].err)
 		}
 		total++
 	}
@@ -81,10 +82,11 @@ func consume(result_chan chan Result) {
 	for result := range result_chan {
 		heap.Push(&pq, &result)
 
-		if pq.Len() > 300 {
+		if pq.Len() > WindowSize {
 			heap.Pop(&pq)
 			success_rate := computeRate(pq)
-			fmt.Printf("TS: [%s], Success Rate: [%f]\n", result.ts, success_rate)
+			fmt.Printf("TS: [%s], Success Rate: [%f]\n",
+				result.ts.Format("RFC3339"), success_rate)
 		}
 	}
 }
@@ -101,7 +103,7 @@ func main() {
 	go consume(output)
 
 	sequence := 0
-	ticker := time.NewTicker(time.Second / 30)
+	ticker := time.NewTicker(time.Second / TicksPerSecond)
 	for range ticker.C {
 		execAsync(db, output, time.Now(), CreatePlayerSQL,
 			fmt.Sprintf("player-%d", sequence), 0, 0)
