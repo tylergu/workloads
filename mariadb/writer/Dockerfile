@@ -10,7 +10,7 @@ RUN GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o mariadb_writer /src/mariad
 
 FROM busybox:stable AS final
 
-COPY --from=go-builder /src/tidb_writer /mariadb_writer
+COPY --from=go-builder /src/mariadb_writer /mariadb_writer
 
 RUN ls .
 
