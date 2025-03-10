@@ -55,7 +55,9 @@ func getEnvWithDefault(key, fallback string) string {
 func execAsync(db *sql.DB, result_chan chan Result, ts time.Time, sql string, args ...any) {
 	go func() {
 		_, err := db.Exec(sql, args...)
-		fmt.Printf("Error: %s\n", err)
+		if err != nil {
+			fmt.Printf("Error: %s\n", err)
+		}
 		result_chan <- Result{
 			err: err,
 			ts:  ts,
@@ -86,7 +88,7 @@ func consume(result_chan chan Result) {
 			heap.Pop(&pq)
 			success_rate := computeRate(pq)
 			fmt.Printf("TS: [%s], Success Rate: [%f]\n",
-				result.ts.Format("RFC3339"), success_rate)
+				result.ts.Format(time.RFC3339), success_rate)
 		}
 	}
 }
