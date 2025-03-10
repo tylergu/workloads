@@ -22,7 +22,10 @@ minikube-stop:
 minikube-delete:
 	minikube delete
 
-
 tidb-writer:
 	docker build -f tidb/writer/Dockerfile -t tylergu1998/tidb-writer:v1 .
 	docker push tylergu1998/tidb-writer:v1
+
+mariadb-writer:
+	docker build -f mariadb/writer/Dockerfile -t tylergu1998/mariadb-writer:v1 .
+	docker push tylergu1998/mariadb-writer:v1
