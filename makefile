@@ -29,3 +29,7 @@ tidb-writer:
 mariadb-writer:
 	docker build -f mariadb/writer/Dockerfile -t tylergu1998/mariadb-writer:v1 .
 	docker push tylergu1998/mariadb-writer:v1
+
+mongodb-writer:
+	docker build -f mongodb/writer/Dockerfile -t tylergu1998/mongodb-writer:v1 .
+	docker push tylergu1998/mongodb-writer:v1
