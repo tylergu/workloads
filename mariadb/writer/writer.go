@@ -99,6 +99,7 @@ func main() {
 		panic(err)
 	}
 	defer db.Close()
+	db.SetConnMaxLifetime(time.Minute * 3)
 	recreateTable(db)
 
 	output := make(chan Result)
