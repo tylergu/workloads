@@ -23,13 +23,13 @@ minikube-delete:
 	minikube delete
 
 tidb-writer:
-	docker build -f tidb/writer/Dockerfile -t tylergu1998/tidb-writer:v1 .
-	docker push tylergu1998/tidb-writer:v1
+	docker build -f tidb/writer/Dockerfile -t ghcr.io/xlab-uiuc/tidb-writer:v1 .
+	docker push ghcr.io/xlab-uiuc/tidb-writer:v1
 
 mariadb-writer:
-	docker build -f mariadb/writer/Dockerfile -t tylergu1998/mariadb-writer:v1 .
-	docker push tylergu1998/mariadb-writer:v1
+	docker build -f mariadb/writer/Dockerfile -t ghcr.io/xlab-uiuc/mariadb-writer:v1 .
+	docker push ghcr.io/xlab-uiuc/mariadb-writer:v1
 
 mongodb-writer:
-	docker build -f mongodb/writer/Dockerfile -t tylergu1998/mongodb-writer:v1 .
-	docker push tylergu1998/mongodb-writer:v1
+	docker build -f mongodb/writer/Dockerfile -t ghcr.io/xlab-uiuc/mongodb-writer:v1 .
+	docker push ghcr.io/xlab-uiuc/mongodb-writer:v1
