@@ -40,11 +40,11 @@ func getEnvWithDefault(key, fallback string) string {
 
 func execAsync(collection *mongo.Collection, result_chan chan Result, ts time.Time, sm *sync.Map, sequence int) {
 	go func() {
-		id := sequence % 1000
-		epoch := sequence / 1000
+		id := int32(sequence % 1000)
+		epoch := int32(sequence / 1000)
 		doc := bson.D{
-			bson.E{Key: "_id", Value: id},
-			bson.E{Key: "sequence", Value: epoch},
+			{Key: "_id", Value: id},
+			{Key: "sequence", Value: epoch},
 		}
 
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
@@ -117,7 +117,7 @@ func check(cm *sync.Map, collection *mongo.Collection) {
 				fmt.Printf("Error decoding document: %s\n", err)
 			}
 
-			if doc[1].Value.(int) != value.(int) {
+			if doc[1].Value.(int32) != value.(int32) {
 				fmt.Printf("Inconsistency detected: [%T]%v != [%T]%v\n", doc[1].Value, doc[1].Value, value, value)
 			}
 			return true
