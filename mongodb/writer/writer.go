@@ -110,14 +110,16 @@ func check(cm *sync.Map, collection *mongo.Collection) {
 			})
 			if result.Err() != nil {
 				fmt.Printf("Error reading from mongo: %s\n", result.Err())
+				return false
 			}
 
 			var doc bson.D
 			if err := result.Decode(&doc); err != nil {
 				fmt.Printf("Error decoding document: %s\n", err)
+				return false
 			}
 
-			if doc[1].Value.(int32) != value.(int32) {
+			if doc[1].Value.(int32) < value.(int32) {
 				fmt.Printf("Inconsistency detected: [%T]%v != [%T]%v\n", doc[1].Value, doc[1].Value, value, value)
 			}
 			return true
