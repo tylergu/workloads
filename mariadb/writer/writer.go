@@ -67,7 +67,7 @@ func writeAsync(db *sql.DB, result_chan chan Result, ts time.Time, sm *sync.Map,
 			_, err = db.ExecContext(ctx, request, fmt.Sprintf("player-%d", playerId), coins)
 		} else {
 			request = CreatePlayerSQL
-			_, err = db.ExecContext(ctx, request, fmt.Sprintf("player-%d", playerId), coins)
+			_, err = db.ExecContext(ctx, request, coins, fmt.Sprintf("player-%d", playerId))
 		}
 
 		if err != nil {
