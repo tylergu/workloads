@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"sync"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -37,16 +38,31 @@ func getEnvWithDefault(key, fallback string) string {
 	return value
 }
 
-func execAsync(collection *mongo.Collection, result_chan chan Result, ts time.Time, sequence int) {
+func execAsync(collection *mongo.Collection, result_chan chan Result, ts time.Time, sm *sync.Map, sequence int) {
 	go func() {
+		id := sequence % 1000
+		epoch := sequence / 1000
 		doc := bson.D{
-			bson.E{Key: "_id", Value: sequence},
-			bson.E{Key: "sequence", Value: sequence},
+			bson.E{Key: "_id", Value: id},
+			bson.E{Key: "sequence", Value: epoch},
 		}
-		_, err := collection.InsertOne(context.Background(), doc)
+
+		var err error
+		if epoch > 0 {
+			err = collection.FindOneAndReplace(context.Background(),
+				bson.D{
+					bson.E{Key: "_id", Value: id},
+				},
+				doc).Err()
+		} else {
+			_, err = collection.InsertOne(context.Background(), doc)
+		}
 		if err != nil {
 			fmt.Printf("Error: %s\n", err)
+		} else {
+			sm.Store(id, epoch)
 		}
+
 		result_chan <- Result{
 			err: err,
 			ts:  ts,
@@ -82,8 +98,32 @@ func consume(result_chan chan Result) {
 	}
 }
 
+func check(cm *sync.Map, collection *mongo.Collection) {
+	// Keep checking the consistency between the map and the database
+	for {
+		cm.Range(func(key, value any) bool {
+			result := collection.FindOne(context.Background(), bson.D{
+				bson.E{Key: "_id", Value: key},
+			})
+			if result.Err() != nil {
+				fmt.Printf("Error reading from mongo: %s\n", result.Err())
+			}
+
+			var doc bson.D
+			if err := result.Decode(&doc); err != nil {
+				fmt.Printf("Error decoding document: %s\n", err)
+			}
+
+			if doc[1].Value != value {
+				fmt.Printf("Inconsistency detected: %v != %v\n", doc[1].Value, value)
+			}
+			return true
+		})
+	}
+}
+
 func main() {
-	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 	client, err := mongo.Connect(ctx,
 		options.Client().ApplyURI(getDSN()).SetRetryWrites(false))
@@ -97,10 +137,13 @@ func main() {
 	output := make(chan Result)
 	go consume(output)
 
+	sm := &sync.Map{}
+	go check(sm, collection)
+
 	sequence := 0
 	ticker := time.NewTicker(time.Second / TicksPerSecond)
 	for range ticker.C {
-		execAsync(collection, output, time.Now(), sequence)
+		execAsync(collection, output, time.Now(), sm, sequence)
 		sequence++
 	}
 }

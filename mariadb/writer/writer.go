@@ -2,21 +2,22 @@ package main
 
 import (
 	"container/heap"
+	"context"
 	"database/sql"
 	"fmt"
 	"os"
+	"sync"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 )
 
 const (
-	CreatePlayerSQL      = "INSERT INTO player (id, coins, goods) VALUES (?, ?, ?)"
-	GetPlayerSQL         = "SELECT id, coins, goods FROM player WHERE id = ?"
+	CreatePlayerSQL      = "INSERT INTO player (id, coins) VALUES (?, ?)"
+	GetPlayerSQL         = "SELECT id, coins FROM player WHERE id = ?"
 	GetCountSQL          = "SELECT count(*) FROM player"
 	GetPlayerWithLockSQL = GetPlayerSQL + " FOR UPDATE"
-	UpdatePlayerSQL      = "UPDATE player set goods = goods + ?, coins = coins + ? WHERE id = ?"
-	GetPlayerByLimitSQL  = "SELECT id, coins, goods FROM player LIMIT ?"
+	UpdatePlayerSQL      = "UPDATE player set coins = ? WHERE id = ?"
 	DropTableSQL         = "DROP TABLE IF EXISTS player"
 	CreateTableSQL       = "CREATE TABLE player ( `id` VARCHAR(36), `coins` INTEGER, `goods` INTEGER, PRIMARY KEY (`id`) );"
 	TicksPerSecond       = 10
@@ -52,12 +53,29 @@ func getEnvWithDefault(key, fallback string) string {
 	return value
 }
 
-func execAsync(db *sql.DB, result_chan chan Result, ts time.Time, sql string, args ...any) {
+func writeAsync(db *sql.DB, result_chan chan Result, ts time.Time, sm *sync.Map, sequence int) {
 	go func() {
-		_, err := db.Exec(sql, args...)
+		playerId := sequence % 1000
+		coins := sequence / 1000
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+		defer cancel()
+
+		var request string
+		var err error
+		if coins > 0 {
+			request = UpdatePlayerSQL
+			_, err = db.ExecContext(ctx, request, fmt.Sprintf("player-%d", playerId), coins)
+		} else {
+			request = CreatePlayerSQL
+			_, err = db.ExecContext(ctx, request, fmt.Sprintf("player-%d", playerId), coins)
+		}
+
 		if err != nil {
 			fmt.Printf("Error: %s\n", err)
+		} else {
+			sm.Store(fmt.Sprintf("player-%d", playerId), coins)
 		}
+
 		result_chan <- Result{
 			err: err,
 			ts:  ts,
@@ -93,6 +111,31 @@ func consume(result_chan chan Result) {
 	}
 }
 
+func check(cm *sync.Map, db *sql.DB) {
+	// Keep checking the consistency between the map and the database
+	for {
+		cm.Range(func(key, value any) bool {
+			playerID := key.(string)
+			rows, err := db.Query(GetPlayerSQL, playerID)
+			if err != nil {
+				fmt.Printf("Error: %s\n", err)
+			}
+
+			for rows.Next() {
+				var id string
+				var coins int
+				if err := rows.Scan(&id, &coins); err != nil {
+					fmt.Printf("Error: %s\n", err)
+				}
+				if coins != value {
+					fmt.Printf("Error: inconsistency mismatch: %d != %d\n", coins, value)
+				}
+			}
+			return true
+		})
+	}
+}
+
 func main() {
 	db, err := sql.Open("mysql", getDSN())
 	if err != nil {
@@ -105,11 +148,13 @@ func main() {
 	output := make(chan Result)
 	go consume(output)
 
+	cm := sync.Map{}
+	go check(&cm, db)
+
 	sequence := 0
 	ticker := time.NewTicker(time.Second / TicksPerSecond)
 	for range ticker.C {
-		execAsync(db, output, time.Now(), CreatePlayerSQL,
-			fmt.Sprintf("player-%d", sequence), 0, 0)
+		writeAsync(db, output, time.Now(), &cm, sequence)
 		sequence++
 	}
 }
