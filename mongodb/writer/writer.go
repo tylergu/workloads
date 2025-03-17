@@ -117,8 +117,8 @@ func check(cm *sync.Map, collection *mongo.Collection) {
 				fmt.Printf("Error decoding document: %s\n", err)
 			}
 
-			if doc[1].Value != value {
-				fmt.Printf("Inconsistency detected: %v != %v\n", doc[1].Value, value)
+			if doc[1].Value.(int) != value.(int) {
+				fmt.Printf("Inconsistency detected: [%T]%v != [%T]%v\n", doc[1].Value, doc[1].Value, value, value)
 			}
 			return true
 		})
