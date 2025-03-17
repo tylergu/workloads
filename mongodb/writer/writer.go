@@ -47,15 +47,15 @@ func execAsync(collection *mongo.Collection, result_chan chan Result, ts time.Ti
 			bson.E{Key: "sequence", Value: epoch},
 		}
 
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+		defer cancel()
+
 		var err error
 		if epoch > 0 {
-			err = collection.FindOneAndReplace(context.Background(),
-				bson.D{
-					bson.E{Key: "_id", Value: id},
-				},
-				doc).Err()
+			_, err = collection.ReplaceOne(ctx,
+				bson.D{{Key: "_id", Value: id}}, doc)
 		} else {
-			_, err = collection.InsertOne(context.Background(), doc)
+			_, err = collection.InsertOne(ctx, doc)
 		}
 		if err != nil {
 			fmt.Printf("Error: %s\n", err)
@@ -102,7 +102,10 @@ func check(cm *sync.Map, collection *mongo.Collection) {
 	// Keep checking the consistency between the map and the database
 	for {
 		cm.Range(func(key, value any) bool {
-			result := collection.FindOne(context.Background(), bson.D{
+			ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+			defer cancel()
+
+			result := collection.FindOne(ctx, bson.D{
 				bson.E{Key: "_id", Value: key},
 			})
 			if result.Err() != nil {
