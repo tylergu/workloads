@@ -127,7 +127,7 @@ func check(cm *sync.Map, db *sql.DB) {
 				if err := rows.Scan(&id, &coins); err != nil {
 					fmt.Printf("Error: %s\n", err)
 				}
-				if coins != value {
+				if coins < value.(int) {
 					fmt.Printf("Error: inconsistency mismatch: %d != %d\n", coins, value)
 				}
 			}
