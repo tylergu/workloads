@@ -64,10 +64,10 @@ func writeAsync(db *sql.DB, result_chan chan Result, ts time.Time, sm *sync.Map,
 		var err error
 		if coins > 0 {
 			request = UpdatePlayerSQL
-			_, err = db.ExecContext(ctx, request, fmt.Sprintf("player-%d", playerId), coins)
+			_, err = db.ExecContext(ctx, request, coins, fmt.Sprintf("player-%d", playerId))
 		} else {
 			request = CreatePlayerSQL
-			_, err = db.ExecContext(ctx, request, coins, fmt.Sprintf("player-%d", playerId))
+			_, err = db.ExecContext(ctx, request, fmt.Sprintf("player-%d", playerId), coins)
 		}
 
 		if err != nil {
