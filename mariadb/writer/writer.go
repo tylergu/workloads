@@ -5,6 +5,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"net"
 	"os"
 	"sync"
 	"time"
@@ -137,6 +138,16 @@ func check(cm *sync.Map, db *sql.DB) {
 }
 
 func main() {
+	ticker := time.NewTicker(time.Second)
+	defer ticker.Stop()
+	for range ticker.C {
+		_, err := net.LookupIP(getEnvWithDefault("MARIADB_HOST", "127.0.0.1"))
+		if err != nil {
+			fmt.Printf("Waiting for SVC nslookup: %s\n", err)
+			continue
+		}
+		break
+	}
 	db, err := sql.Open("mysql", getDSN())
 	if err != nil {
 		panic(err)
@@ -152,7 +163,7 @@ func main() {
 	go check(&cm, db)
 
 	sequence := 0
-	ticker := time.NewTicker(time.Second / TicksPerSecond)
+	ticker = time.NewTicker(time.Second / TicksPerSecond)
 	for range ticker.C {
 		writeAsync(db, output, time.Now(), &cm, sequence)
 		sequence++

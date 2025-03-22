@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net"
 	"os"
 	"strconv"
 	"sync"
@@ -106,6 +107,16 @@ func check(cm *sync.Map, session *gocql.Session) {
 }
 
 func main() {
+	ticker := time.NewTicker(time.Second)
+	defer ticker.Stop()
+	for range ticker.C {
+		_, err := net.LookupIP(getEnvWithDefault("CASSANDRA_HOST", "development-test-cluster-service.cass-operator.svc.cluster.local"))
+		if err != nil {
+			fmt.Printf("Waiting for SVC nslookup: %s\n", err)
+			continue
+		}
+		break
+	}
 	cluster := gocql.NewCluster(
 		getEnvWithDefault("CASSANDRA_HOST", "development-test-cluster-service.cass-operator.svc.cluster.local"),
 	)
@@ -145,7 +156,7 @@ func main() {
 	go check(&cm, session)
 
 	sequence := 0
-	ticker := time.NewTicker(time.Second / TicksPerSecond)
+	ticker = time.NewTicker(time.Second / TicksPerSecond)
 	for range ticker.C {
 		writeAsync(session, output, time.Now(), &cm, sequence)
 		sequence++

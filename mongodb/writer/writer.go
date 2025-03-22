@@ -4,6 +4,7 @@ import (
 	"container/heap"
 	"context"
 	"fmt"
+	"net"
 	"os"
 	"sync"
 	"time"
@@ -128,6 +129,16 @@ func check(cm *sync.Map, collection *mongo.Collection) {
 }
 
 func main() {
+	ticker := time.NewTicker(time.Second)
+	defer ticker.Stop()
+	for range ticker.C {
+		_, err := net.LookupIP(getEnvWithDefault("MONGO_HOST", "test-cluster-mongos.acto-namespace.svc.cluster.local"))
+		if err != nil {
+			fmt.Printf("Waiting for SVC nslookup: %s\n", err)
+			continue
+		}
+		break
+	}
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 	client, err := mongo.Connect(ctx,
@@ -146,7 +157,8 @@ func main() {
 	go check(sm, collection)
 
 	sequence := 0
-	ticker := time.NewTicker(time.Second / TicksPerSecond)
+	ticker = time.NewTicker(time.Second / TicksPerSecond)
+	defer ticker.Stop()
 	for range ticker.C {
 		execAsync(collection, output, time.Now(), sm, sequence)
 		sequence++
