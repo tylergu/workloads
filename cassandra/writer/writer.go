@@ -90,14 +90,14 @@ func check(cm *sync.Map, session *gocql.Session) {
 	// Keep checking the consistency between the map and the database
 	for {
 		cm.Range(func(key, value any) bool {
-			playerID := key.(string)
+			playerID := key.(int)
 			rows := session.Query("SELECT id, coins FROM test.player WHERE id = ?", playerID).Iter()
 
 			var id string
 			var coins int
 			for rows.Scan(&id, &coins) {
 				if coins < value.(int) {
-					log.Printf("Inconsistency detected: player %s has %d coins in the map but %d in the database\n", playerID, value.(int), coins)
+					log.Printf("Inconsistency detected: player %d has %d coins in the map but %d in the database\n", playerID, value.(int), coins)
 				}
 			}
 			return true
