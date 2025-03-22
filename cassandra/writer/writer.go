@@ -135,17 +135,23 @@ func main() {
 		AllowedAuthenticators: []string{"org.apache.cassandra.auth.PasswordAuthenticator"},
 	} //replace the username and password fields with their real settings, you will need to allow the use of the Instaclustr Password Authenticator.
 
-	var session *gocql.Session
-	for {
-		session, err := cluster.CreateSession()
-		if err != nil {
-			session.Close()
-			continue
-		}
-		session.SetConsistency(gocql.Quorum)
-		defer session.Close()
-		break
+	// var session *gocql.Session
+	// for {
+	// 	session, err := cluster.CreateSession()
+	// 	if err != nil {
+	// 		session.Close()
+	// 		continue
+	// 	}
+	// 	session.SetConsistency(gocql.Quorum)
+	// 	defer session.Close()
+	// 	break
+	// }
+
+	session, err := cluster.CreateSession()
+	if err != nil {
+		panic(err)
 	}
+	defer session.Close()
 
 	if err := session.Query("CREATE KEYSPACE IF NOT EXISTS test WITH REPLICATION = {'class': 'NetworkTopologyStrategy', 'replication_factor': 3}").Exec(); err != nil {
 		panic(err)
