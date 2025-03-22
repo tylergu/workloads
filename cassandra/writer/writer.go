@@ -37,12 +37,12 @@ func writeAsync(session *gocql.Session, output chan Result, ts time.Time, sm *sy
 		var err error
 		if coins > 0 {
 			err = session.Query(
-				"UPDATE player SET coins = ? WHERE id = ?",
+				"UPDATE test.player SET coins = ? WHERE id = ?",
 				coins,
 				playerId).WithContext(ctx).Exec()
 		} else {
 			err = session.Query(
-				"INSERT INTO player (id, coins) VALUES (?, ?)",
+				"INSERT INTO test.player (id, coins) VALUES (?, ?)",
 				playerId,
 				coins).WithContext(ctx).Exec()
 		}
@@ -134,13 +134,17 @@ func main() {
 		Password:              getEnvWithDefault("CASSANDRA_PASSWORD", ""),
 		AllowedAuthenticators: []string{"org.apache.cassandra.auth.PasswordAuthenticator"},
 	} //replace the username and password fields with their real settings, you will need to allow the use of the Instaclustr Password Authenticator.
-	cluster.Keyspace = "test"
-	session, err := cluster.CreateSession()
-	session.SetConsistency(gocql.Quorum)
-	if err != nil {
-		panic(err)
+
+	var session *gocql.Session
+	for {
+		session, err := cluster.CreateSession()
+		if err != nil {
+			continue
+		}
+		session.SetConsistency(gocql.Quorum)
+		defer session.Close()
+		break
 	}
-	defer session.Close()
 
 	if err := session.Query("CREATE KEYSPACE IF NOT EXISTS test WITH REPLICATION = {'class': 'NetworkTopologyStrategy', 'replication_factor': 3}").Exec(); err != nil {
 		panic(err)
