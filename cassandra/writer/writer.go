@@ -107,7 +107,7 @@ func check(cm *sync.Map, session *gocql.Session) {
 
 func main() {
 	cluster := gocql.NewCluster(
-		getEnvWithDefault("CASSANDRA_HOST", "development-test-cluster-service.acto-namespace.svc.cluster.local"),
+		getEnvWithDefault("CASSANDRA_HOST", "development-test-cluster-service.cass-operator.svc.cluster.local"),
 	)
 	port, err := strconv.Atoi(getEnvWithDefault("CASSANDRA_PORT", "9042"))
 	if err != nil {
@@ -121,7 +121,7 @@ func main() {
 	cluster.Authenticator = gocql.PasswordAuthenticator{
 		Username:              getEnvWithDefault("CASSANDRA_USER", ""),
 		Password:              getEnvWithDefault("CASSANDRA_PASSWORD", ""),
-		AllowedAuthenticators: []string{"com.instaclustr.cassandra.auth.InstaclustrPasswordAuthenticator"},
+		AllowedAuthenticators: []string{"org.apache.cassandra.auth.PasswordAuthenticator"},
 	} //replace the username and password fields with their real settings, you will need to allow the use of the Instaclustr Password Authenticator.
 	session, err := cluster.CreateSession()
 	session.SetConsistency(gocql.Quorum)
