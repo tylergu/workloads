@@ -123,21 +123,19 @@ func main() {
 		Password:              getEnvWithDefault("CASSANDRA_PASSWORD", ""),
 		AllowedAuthenticators: []string{"org.apache.cassandra.auth.PasswordAuthenticator"},
 	} //replace the username and password fields with their real settings, you will need to allow the use of the Instaclustr Password Authenticator.
+	cluster.Keyspace = "test"
 	session, err := cluster.CreateSession()
 	session.SetConsistency(gocql.Quorum)
 	if err != nil {
-		log.Println(err)
-		return
+		panic(err)
 	}
 	defer session.Close()
 
 	if err := session.Query("CREATE KEYSPACE IF NOT EXISTS test WITH REPLICATION = {'class': 'NetworkTopologyStrategy', 'replication_factor': 3}").Exec(); err != nil {
-		log.Println(err)
-		return
+		panic(err)
 	}
 	if err := session.Query("CREATE TABLE IF NOT EXISTS test.player (id int PRIMARY KEY, coins int)").Exec(); err != nil {
-		log.Println(err)
-		return
+		panic(err)
 	}
 
 	output := make(chan Result)
