@@ -139,6 +139,7 @@ func main() {
 	for {
 		session, err := cluster.CreateSession()
 		if err != nil {
+			session.Close()
 			continue
 		}
 		session.SetConsistency(gocql.Quorum)
