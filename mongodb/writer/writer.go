@@ -87,7 +87,16 @@ func consume(result_chan chan Result) {
 	pq := make(PriorityQueue, 0)
 	heap.Init(&pq)
 
+	first_success := false
+
 	for result := range result_chan {
+		if !first_success {
+			if result.err == nil {
+				first_success = true
+			} else {
+				continue
+			}
+		}
 		heap.Push(&pq, &result)
 
 		if pq.Len() > WindowSize {
