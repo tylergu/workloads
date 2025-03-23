@@ -5,15 +5,6 @@ COPY . .
 
 RUN GOOS=linux GOARCH=amd64 CGO_ENABLED=1 go build -o kafka_writer /src/kafka/writer/*.go
 
-
-# ================================
-
-FROM busybox:stable AS final
-
-COPY --from=go-builder /src/kafka_writer /kafka_writer
-
-RUN ls .
-
 USER 0:0
 
-ENTRYPOINT ["/kafka_writer"]
+ENTRYPOINT ["kafka_writer"]
