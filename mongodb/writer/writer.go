@@ -137,6 +137,12 @@ func check(cm *sync.Map, collection *mongo.Collection) {
 	}
 }
 
+// OKResponse is a standard MongoDB response
+type OKResponse struct {
+	Errmsg string `bson:"errmsg,omitempty" json:"errmsg,omitempty"`
+	OK     int    `bson:"ok" json:"ok"`
+}
+
 func main() {
 	ticker := time.NewTicker(time.Second)
 	defer ticker.Stop()
@@ -169,6 +175,24 @@ func main() {
 	ticker = time.NewTicker(time.Second / TicksPerSecond)
 	defer ticker.Stop()
 	for range ticker.C {
+		curr := client.Database("mongodb").RunCommand(ctx, bson.D{
+			{Key: "listDatabases", Value: 1},
+			{Key: "filter", Value: bson.D{{Key: "name", Value: "admin"}}},
+			{Key: "nameOnly", Value: true},
+		})
+		if curr.Err() != nil {
+			fmt.Printf("Error: %s\n", curr.Err())
+		}
+		resp := OKResponse{}
+		if err := curr.Decode(&resp); err != nil {
+			fmt.Printf("Error: %s\n", err)
+		}
+		if resp.OK == 0 {
+			fmt.Printf("list admin db not ok: %s\n", resp.Errmsg)
+		} else {
+			fmt.Printf("list admin db ok\n")
+		}
+
 		execAsync(collection, output, time.Now(), sm, sequence)
 		sequence++
 	}
