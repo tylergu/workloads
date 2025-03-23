@@ -1,16 +1,16 @@
-FROM alpine:edge AS build
-RUN apk add --no-cache --update go gcc g++
-WORKDIR /app
-COPY . /app
+FROM golang:1.23-bullseye AS go-builder
 
-RUN GOOS=linux GOARCH=amd64 CGO_ENABLED=1 go build -o kafka_writer /app/kafka/writer/*.go
+WORKDIR /src
+COPY . .
+
+RUN GOOS=linux GOARCH=amd64 CGO_ENABLED=1 go build -o kafka_writer /src/kafka/writer/*.go
 
 
 # ================================
 
 FROM busybox:stable AS final
 
-COPY --from=build /src/kafka_writer /kafka_writer
+COPY --from=go-builder /src/kafka_writer /kafka_writer
 
 RUN ls .
 
