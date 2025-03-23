@@ -7,4 +7,4 @@ RUN GOOS=linux GOARCH=amd64 CGO_ENABLED=1 go build -o kafka_writer /src/kafka/wr
 
 USER 0:0
 
-ENTRYPOINT ["kafka_writer"]
+ENTRYPOINT ["/src/kafka_writer"]
