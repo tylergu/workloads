@@ -15,16 +15,6 @@ const (
 	WindowSize     = 100
 )
 
-func getDSN() string {
-	host := getEnvWithDefault("MONGO_HOST", "test-cluster-mongos.acto-namespace.svc.cluster.local")
-	port := getEnvWithDefault("MONGO_PORT", "27017")
-	user := getEnvWithDefault("MONGO_USER", "root")
-	password := getEnvWithDefault("MONGO_PASSWORD", "")
-
-	return fmt.Sprintf("mongodb://%s:%s@%s:%s",
-		user, password, host, port)
-}
-
 func getEnvWithDefault(key, fallback string) string {
 	value := os.Getenv(key)
 	if len(value) == 0 {
