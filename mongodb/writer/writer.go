@@ -53,8 +53,12 @@ func execAsync(collection *mongo.Collection, result_chan chan Result, ts time.Ti
 
 		var err error
 		if epoch > 0 {
-			_, err = collection.ReplaceOne(ctx,
+			var result *mongo.UpdateResult
+			result, err = collection.ReplaceOne(ctx,
 				bson.D{{Key: "_id", Value: id}}, doc)
+			if result.MatchedCount == 0 {
+				_, err = collection.InsertOne(ctx, doc)
+			}
 		} else {
 			_, err = collection.InsertOne(ctx, doc)
 		}
@@ -175,25 +179,25 @@ func main() {
 	ticker = time.NewTicker(time.Second / TicksPerSecond)
 	defer ticker.Stop()
 	for range ticker.C {
-		t_ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-		defer cancel()
-		curr := client.Database("admin").RunCommand(t_ctx, bson.D{
-			{Key: "listDatabases", Value: 1},
-			{Key: "filter", Value: bson.D{{Key: "name", Value: "admin"}}},
-			{Key: "nameOnly", Value: true},
-		})
-		if curr.Err() != nil {
-			fmt.Printf("Error: %s\n", curr.Err())
-		}
-		resp := OKResponse{}
-		if err := curr.Decode(&resp); err != nil {
-			fmt.Printf("Error: %s\n", err)
-		}
-		if resp.OK == 0 {
-			fmt.Printf("list admin db not ok: %s\n", resp.Errmsg)
-		} else {
-			fmt.Printf("list admin db ok\n")
-		}
+		// t_ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+		// defer cancel()
+		// curr := client.Database("admin").RunCommand(t_ctx, bson.D{
+		// 	{Key: "listDatabases", Value: 1},
+		// 	{Key: "filter", Value: bson.D{{Key: "name", Value: "admin"}}},
+		// 	{Key: "nameOnly", Value: true},
+		// })
+		// if curr.Err() != nil {
+		// 	fmt.Printf("Error: %s\n", curr.Err())
+		// }
+		// resp := OKResponse{}
+		// if err := curr.Decode(&resp); err != nil {
+		// 	fmt.Printf("Error: %s\n", err)
+		// }
+		// if resp.OK == 0 {
+		// 	fmt.Printf("list admin db not ok: %s\n", resp.Errmsg)
+		// } else {
+		// 	fmt.Printf("list admin db ok\n")
+		// }
 
 		execAsync(collection, output, time.Now(), sm, sequence)
 		sequence++
