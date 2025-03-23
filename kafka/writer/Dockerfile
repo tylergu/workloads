@@ -1,10 +1,9 @@
 FROM alpine:edge AS build
 RUN apk add --no-cache --update go gcc g++
 WORKDIR /app
-ENV GOPATH /app
-COPY . /app/src
+COPY . /app
 
-RUN GOOS=linux GOARCH=amd64 CGO_ENABLED=1 go build -o kafka_writer /app/src/kafka/writer/*.go
+RUN GOOS=linux GOARCH=amd64 CGO_ENABLED=1 go build -o kafka_writer /app/kafka/writer/*.go
 
 
 # ================================
