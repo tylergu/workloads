@@ -6,8 +6,8 @@ import (
 	"os"
 	"time"
 
+	"github.com/confluentinc/confluent-kafka-go/kafka"
 	_ "github.com/go-sql-driver/mysql"
-	"gopkg.in/confluentinc/confluent-kafka-go.v1/kafka"
 )
 
 const (

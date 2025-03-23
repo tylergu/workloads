@@ -3,7 +3,7 @@ FROM golang:1.23.7-alpine3.21 AS go-builder
 WORKDIR /src
 COPY . .
 
-RUN GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o kafka_writer /src/kafka/writer/*.go
+RUN GOOS=linux GOARCH=amd64 go build -o kafka_writer /src/kafka/writer/*.go
 
 
 # ================================
