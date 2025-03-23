@@ -1,16 +1,17 @@
-FROM golang:1.23.7-alpine3.21 AS go-builder
+FROM alpine:edge AS build
+RUN apk add --no-cache --update go gcc g++
+WORKDIR /app
+ENV GOPATH /app
+COPY . /app/src
 
-WORKDIR /src
-COPY . .
-
-RUN GOOS=linux GOARCH=amd64 go build -o kafka_writer /src/kafka/writer/*.go
+RUN GOOS=linux GOARCH=amd64 CGO_ENABLED=1 go build -o kafka_writer /app/src/kafka/writer/*.go
 
 
 # ================================
 
 FROM busybox:stable AS final
 
-COPY --from=go-builder /src/kafka_writer /kafka_writer
+COPY --from=build /src/kafka_writer /kafka_writer
 
 RUN ls .
 
