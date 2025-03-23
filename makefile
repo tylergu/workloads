@@ -38,4 +38,8 @@ cassandra-writer:
 	docker build -f cassandra/writer/Dockerfile -t ghcr.io/xlab-uiuc/cassandra-writer:v1 .
 	docker push ghcr.io/xlab-uiuc/cassandra-writer:v1
 
-all-writers: tidb-writer mariadb-writer mongodb-writer cassandra-writer
+kafka-writer:
+	docker build -f kafka/writer/Dockerfile -t ghcr.io/xlab-uiuc/kafka-writer:v1 .
+	docker push ghcr.io/xlab-uiuc/kafka-writer:v1
+
+all-writers: tidb-writer mariadb-writer mongodb-writer cassandra-writer kafka-writer
