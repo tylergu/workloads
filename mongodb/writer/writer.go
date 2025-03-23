@@ -175,7 +175,7 @@ func main() {
 	ticker = time.NewTicker(time.Second / TicksPerSecond)
 	defer ticker.Stop()
 	for range ticker.C {
-		curr := client.Database("mongodb").RunCommand(ctx, bson.D{
+		curr := client.Database("admin").RunCommand(ctx, bson.D{
 			{Key: "listDatabases", Value: 1},
 			{Key: "filter", Value: bson.D{{Key: "name", Value: "admin"}}},
 			{Key: "nameOnly", Value: true},
