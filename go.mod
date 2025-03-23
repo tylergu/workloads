@@ -6,14 +6,15 @@ toolchain go1.22.4
 
 require (
 	github.com/go-sql-driver/mysql v1.9.0
+	github.com/gocql/gocql v1.7.0
 	github.com/rabbitmq/amqp091-go v1.8.0
 	go.mongodb.org/mongo-driver v1.17.3
+	gopkg.in/confluentinc/confluent-kafka-go.v1 v1.8.2
 )
 
 require (
 	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/confluentinc/confluent-kafka-go v1.9.2 // indirect
-	github.com/gocql/gocql v1.7.0 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/hailocab/go-hostpool v0.0.0-20160125115350-e80d13ce29ed // indirect
 	github.com/klauspost/compress v1.16.7 // indirect
