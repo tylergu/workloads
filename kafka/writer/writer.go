@@ -88,7 +88,7 @@ func main() {
 			"client.id":         "myProducer",
 			"acks":              "all",
 			"security.protocol": "sasl_plaintext",
-			"sasl.mechanisms":   "PLAIN",
+			"sasl.mechanisms":   "SCRAM-SHA-512",
 			"sasl.username":     getEnvWithDefault("KAFKA_USER", "user"),
 			"sasl.password":     getEnvWithDefault("KAFKA_PASSWORD", "password"),
 		},
