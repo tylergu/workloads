@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/confluentinc/confluent-kafka-go/kafka"
-	_ "github.com/go-sql-driver/mysql"
 )
 
 const (
@@ -88,9 +87,6 @@ func main() {
 			"bootstrap.servers": fmt.Sprintf("%s:%s", getEnvWithDefault("KAFKA_HOST", "localhost"), getEnvWithDefault("KAFKA_PORT", "9092")),
 			"client.id":         "myProducer",
 			"acks":              "all",
-			"security.protocol": "sasl_plaintext",
-			"sasl.username":     getEnvWithDefault("KAFKA_USER", "my-user"),
-			"sasl.password":     getEnvWithDefault("KAFKA_PASSWORD", ""),
 		},
 	)
 	if err != nil {
