@@ -153,6 +153,10 @@ func main() {
 	}
 	defer session.Close()
 
+	if err := session.Query("ALTER KEYSPACE system_auth WITH replication = {'class': 'NetworkTopologyStrategy', 'replication_factor': 3};").Exec(); err != nil {
+		panic(err)
+	}
+
 	if err := session.Query("CREATE KEYSPACE IF NOT EXISTS test WITH REPLICATION = {'class': 'NetworkTopologyStrategy', 'replication_factor': 3}").Exec(); err != nil {
 		panic(err)
 	}
