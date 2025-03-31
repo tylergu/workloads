@@ -120,6 +120,7 @@ func check(cm *sync.Map, db *sql.DB) {
 			rows, err := db.Query(GetPlayerSQL, playerID)
 			if err != nil {
 				fmt.Printf("Error: %s\n", err)
+				return true
 			}
 
 			for rows.Next() {
