@@ -34,6 +34,10 @@ mongodb-writer:
 	docker build -f mongodb/writer/Dockerfile -t ghcr.io/xlab-uiuc/mongodb-writer:v1 .
 	docker push ghcr.io/xlab-uiuc/mongodb-writer:v1
 
+mongodb-writer-1333:
+	docker build -f mongodb/writer_mongodb_1333/Dockerfile -t ghcr.io/xlab-uiuc/mongodb-writer-1333:v1 .
+	docker push ghcr.io/xlab-uiuc/mongodb-writer-1333:v1
+
 cassandra-writer:
 	docker build -f cassandra/writer/Dockerfile -t ghcr.io/xlab-uiuc/cassandra-writer:v1 .
 	docker push ghcr.io/xlab-uiuc/cassandra-writer:v1
