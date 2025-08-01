@@ -17,7 +17,7 @@ import (
 )
 
 const (
-	TicksPerSecond = 10
+	TicksPerSecond = 30
 	WindowSize     = 100
 )
 
