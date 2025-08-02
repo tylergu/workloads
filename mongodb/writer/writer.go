@@ -56,7 +56,7 @@ func execAsync(collection *mongo.Collection, result_chan chan Result, ts time.Ti
 			var result *mongo.UpdateResult
 			result, err = collection.ReplaceOne(ctx,
 				bson.D{{Key: "_id", Value: id}}, doc)
-			if result.MatchedCount == 0 {
+			if err == nil && result != nil && result.MatchedCount == 0 {
 				_, err = collection.InsertOne(ctx, doc)
 			}
 		} else {
